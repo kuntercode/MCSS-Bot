@@ -1,7 +1,3 @@
-@echo off
+cd C:\Users\Pinchas\Desktop\Test_Server
 
-echo Start server...
-
-:loop
-
-goto loop
+java -Xms1G -Xmx1G -jar spigot.jar nogui
