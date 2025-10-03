@@ -45,11 +45,9 @@ async def check_server_status():
 
     try:
         status = await asyncio.wait_for(server.async_status(), timeout=10.0)
-        print("server online")
         await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f"Server, {status.players.online}/{status.players.max} online"))
 
     except Exception:
-        print("server offline")
         await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.listening, name="/startserver"))
 
 
