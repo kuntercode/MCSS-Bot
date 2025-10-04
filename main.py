@@ -1,14 +1,38 @@
 
-from mcstatus import JavaServer
-import discord
-from discord.ext import tasks, commands
+import sys
 import yaml
 import subprocess
 import asyncio
+import discord
+from discord.ext import tasks, commands
+from mcstatus import JavaServer
 
-# load config file
-with open("config.yaml", "r") as file:
-    config = yaml.safe_load(file)
+
+default_config = {
+    "bot_token": "YOUR_BOT_TOKEN",
+    "embed_color": "#2d3b60",
+    "embed_author": "Kunter",
+    "embed_icon": "https://github.com/kuntercode.png",
+    "command_cooldown": 60,
+    "server_address": "localhost",
+    "start_command": "start.bat"
+}
+
+config = None
+
+# create config file with default settings if not exists
+try:
+    with open("mcss_config.yaml", "x") as file:
+        yaml.safe_dump(default_config, file, default_flow_style=False)
+
+# read config file if exists
+except FileExistsError:
+    with open("mcss_config.yaml", "r") as file:
+        config = yaml.safe_load(file)
+
+if config is None:
+    sys.exit()
+
 
 bot = discord.Bot()
 
@@ -18,16 +42,16 @@ server = JavaServer.lookup(config["server_address"])
 embed = discord.Embed(
     title="[title]",
     description="[description]",
-    color=discord.Colour.green(),
+    color=int(config["embed_color"].replace("#", "0x"), 16),
 )
 
-embed.set_author(name="Furry Team", icon_url="https://cdn.discordapp.com/attachments/1033783709364670464/1419624423610122352/avatar_e3d00202-c001-4ab3-9f50-32baf29d0fd8.png?ex=68d26fc5&is=68d11e45&hm=12e224421976bd93fe94e706a966c8e88d2c77e3c47cfa449101ef960f6f8908&")
+if config["embed_author"] is not None:
+    embed.set_author(name=config["embed_author"], icon_url=config["embed_icon"])
 
 
 @bot.event
 async def on_ready():
     print(f"bot ready! logged in as {bot.user}")
-    #await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.listening, name="/startserver"))
     check_server_status.start()
 
 
