@@ -1,5 +1,5 @@
 .env
 *.yaml
+*.bat
 build
 dist
-start.bat
